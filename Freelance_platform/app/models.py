@@ -16,8 +16,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(128), nullable=False)
     created_at = db.Column(db.DateTime, default=db.func.now())
     role_id = db.Column(db.Integer, db.ForeignKey('role.id'), nullable=False)
-    profile_rel = db.relationship('Profile', backref='user', uselist=False)
-
+    
     def set_password(self, password):
         hashed = bcrypt.generate_password_hash(password)
         self.password_hash = hashed.decode("utf-8")

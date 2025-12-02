@@ -3,6 +3,7 @@ from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identi
 from app import db  # On importe db pour les sessions et les commits
 from app.models import User, Role
 from sqlalchemy import select # Import nécessaire pour la syntaxe moderne de requête
+from app.utils import role_required
 
 # Définition du Blueprint avec le préfixe /auth
 auth_bp = Blueprint('auth', __name__, url_prefix='/auth')
@@ -82,4 +83,15 @@ def protected():
         "msg": f"Accès autorisé pour l'utilisateur ID: {current_user_id}",
         "email": user.email,
         "role_id": user.role_id
+    }), 200
+
+
+@auth_bp.route('/admin-only', methods=['GET'])
+@jwt_required()
+@role_required(['admin']) # Seul l'utilisateur avec le rôle 'admin' peut y accéder
+def admin_only_route():
+    user_id = get_jwt_identity()
+    return jsonify({
+        "msg": f"Bienvenue Administrateur {user_id}",
+        "resource": "Accès à la console d'administration."
     }), 200
